@@ -1,10 +1,9 @@
-<!DOCTYPE html>
 <html>
 <body>
 
 <form action="" method="POST" enctype="multipart/form-data">
 	<input type="hidden" name="MAX_FILE_SIZE" value="1000000">
-	<p> File: <input type="file" name="fileToUpload">
+	<p> File: <input type="file" name="fileToUpload" id="fileToUpload">
     	<input type="submit" value="Upload" name="upload">
 </form>
 	
