@@ -56,9 +56,11 @@ HTML;
 	}
 
 	function login() {
-		$masterUser = "blackadder";
-		$masterPassword = "ca169b2bf2e2e2efc4f8638b2afc1a24d237da4ee03be6fb079e9ed9eac17dcdc3afe536ff6cedd39f28f4603fd1744b98df35f8308cfc6f8bcd74a21f52a90d";
+		$masterUser = "";
+		$masterPassword = "";
 		if (isset($_POST['username']) && isset($_POST['password'])) {
+			# Add checks to ensure password has not been left blank
+			# Exit script if true
 			if ($_POST['username'] === $masterUser and $_POST['password'] === $masterPassword) {
 				$GLOBALS['loggedIn'] = TRUE;
 				displayForm();
