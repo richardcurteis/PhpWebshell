@@ -68,7 +68,7 @@ HTML;
 			exit();
 		}
 
-		if (isset($_POST['username']) && isset($_POST['password'])) {
+		if (isset($_POST['username']) and isset($_POST['password'])) {
 			if ($_POST['username'] === $masterUser and $_POST['password'] === $masterPassword) {
 				$_SESSION['valid'] = true;
         $_SESSION['timeout'] = time();
